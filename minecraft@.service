@@ -6,14 +6,14 @@ After=network.target
 Type=forking
 User=minecraft
 Group=minecraft
-WorkingDirectory=/srv/minecraft-servers/%i
+WorkingDirectory=/opt/minecraft-servers/%i
 
-Environment="PATH=/usr/bin:/usr/local/bin:/usr/lib/jvm/default/bin"
+Environment="PATH=/usr/bin:/usr/local/bin"
 
 # wipe dead sessions, check for active server, start server
 ExecStartPre=/bin/bash -c 'screen -wipe %i-minecraft 2>/dev/null || true'
 ExecStartPre=/bin/bash -c 'if screen -list | grep -q "^\\s*[0-9]*\\.%i-minecraft\\s*(.*Attached.*|.*Detached.*)"; then echo "Server %i is already running"; exit 1; fi'
-ExecStart=/usr/bin/screen -dmS %i-minecraft /srv/minecraft-servers/%i/run.sh
+ExecStart=/usr/bin/screen -dmS %i-minecraft /opt/minecraft-servers/%i/run.sh
 
 # send stop command, wait for server to stop
 ExecStop=/bin/bash -c 'screen -S %i-minecraft -X stuff "stop\\n" 2>/dev/null || true'
@@ -23,7 +23,7 @@ ExecStop=/bin/bash -c 'while screen -list | grep -q %i-minecraft; do sleep 1; do
 ExecReload=/bin/bash -c 'screen -S %i-minecraft -X stuff "stop\\n" 2>/dev/null || true'
 ExecReload=/bin/bash -c 'while screen -list | grep -q %i-minecraft; do sleep 1; done'
 ExecReload=/bin/bash -c 'screen -wipe %i-minecraft 2>/dev/null || true'
-ExecReload=/usr/bin/screen -dmS %i-minecraft /srv/minecraft-servers/%i/run.sh
+ExecReload=/usr/bin/screen -dmS %i-minecraft /opt/minecraft-servers/%i/run.sh
 
 TimeoutStopSec=60
 
